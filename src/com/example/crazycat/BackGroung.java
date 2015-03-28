@@ -11,6 +11,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.Toast;
 
 public class BackGroung extends SurfaceView implements OnTouchListener {
 
@@ -36,6 +37,28 @@ public class BackGroung extends SurfaceView implements OnTouchListener {
 		initGame();
 	}
 
+	Callback callback = new Callback() {
+
+		@Override
+		public void surfaceDestroyed(SurfaceHolder holder) {
+
+		}
+
+		@Override
+		public void surfaceCreated(SurfaceHolder holder) {
+			redraw();
+		}
+
+		@Override
+		public void surfaceChanged(SurfaceHolder holder, int format, int width,
+				int height) {
+
+		}
+	};
+
+	/*
+	 * draw the canvas
+	 */
 	private void redraw() {
 		Canvas canvas = getHolder().lockCanvas();
 		canvas.drawColor(Color.GRAY);
@@ -76,29 +99,13 @@ public class BackGroung extends SurfaceView implements OnTouchListener {
 		getHolder().unlockCanvasAndPost(canvas);
 	}
 
-	Callback callback = new Callback() {
-
-		@Override
-		public void surfaceDestroyed(SurfaceHolder holder) {
-
-		}
-
-		@Override
-		public void surfaceCreated(SurfaceHolder holder) {
-			redraw();
-		}
-
-		@Override
-		public void surfaceChanged(SurfaceHolder holder, int format, int width,
-				int height) {
-
-		}
-	};
-
 	private Dot getDot(int x, int y) {
 		return mardDot[y][x];
 	}
 
+	/*
+	 * cat move
+	 */
 	private boolean isAtEdge(Dot dot) {
 		if (dot.getX() * dot.getY() == 0 || dot.getX() + 1 == COL
 				|| dot.getY() + 1 == ROW) {
@@ -122,6 +129,45 @@ public class BackGroung extends SurfaceView implements OnTouchListener {
 			step++;
 			oir = next;
 		}
+	}
+
+	private void move() {
+		boolean flag = false;
+		if (isAtEdge(cat)) {
+			lose();
+		} else {
+			for (int i = 1; i < 7; i++) {
+				if (getNextDot(cat, i) != null
+						&& getNextDot(cat, i).status == Dot.STATUS_OFF) {
+					moveTo(getNextDot(cat, i));
+					flag = true;
+					break;
+				}
+			}
+			if (false == flag) {
+				win();
+			}
+			// for (int i = 1; i < 7; i++) {
+			// if (getDistance(cat, i) > 0) {
+			// moveTo(getNextDot(cat, i));
+			// flag = true;
+			// break;
+			// }
+			// }
+			// if (false == flag) {
+			// win();
+			// }
+		}
+	}
+
+	private void win() {
+		Toast.makeText(getContext(), "you win < the cat lose",
+				Toast.LENGTH_SHORT).show();
+	}
+
+	private void lose() {
+		Toast.makeText(getContext(), "the cat win < you lose",
+				Toast.LENGTH_SHORT).show();
 	}
 
 	private void moveTo(Dot dot) {
@@ -200,6 +246,9 @@ public class BackGroung extends SurfaceView implements OnTouchListener {
 			}
 			if (y + 1 > ROW || x + 1 > COL) {
 				initGame();
+				/*
+				 * test code
+				 */
 				// getNextDot(cat, k).setStatus(Dot.STATUS_IN);
 				// k++;
 				// redraw();
@@ -207,8 +256,10 @@ public class BackGroung extends SurfaceView implements OnTouchListener {
 				// for (int i = 1; i < 7; i++) {
 				// System.out.println(i +"---"+ getDistance(cat, i) );
 				// }
+
 			} else {
 				getDot(x, y).setStatus(Dot.STATUS_ON);
+				move();
 			}
 			redraw();
 		}

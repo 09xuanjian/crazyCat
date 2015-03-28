@@ -1,2 +1,2 @@
 # crazyCat
-模仿微信小游戏crazy Cat，写成的小游戏
+It a game,It is my first android game.

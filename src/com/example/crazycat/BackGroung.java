@@ -258,8 +258,10 @@ public class BackGroung extends SurfaceView implements OnTouchListener {
 				// }
 
 			} else {
-				getDot(x, y).setStatus(Dot.STATUS_ON);
-				move();
+				if (getDot(x, y).status == Dot.STATUS_OFF) {
+					getDot(x, y).setStatus(Dot.STATUS_ON);
+					move();
+				}
 			}
 			redraw();
 		}
